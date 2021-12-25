@@ -18,12 +18,18 @@ export class Sketch {
    */
   #path
 
+  /**
+   * @type {Spot | null}
+   */
+  #currentSpot
+
   #p5
 
   constructor() {
     this.#configuration = new Configuration()
     this.#grid = new Grid(this.#configuration.cols, this.#configuration.rows)
     this.#path = []
+    this.#currentSpot = null
     new P5(this.#sketch)
   }
 
@@ -40,66 +46,78 @@ export class Sketch {
   }
 
   #draw() {
-    let currentSpot
-
-    if (this.#configuration.openSet.size > 0) {
-      const arrayFromOpenSet = Array.from(this.#configuration.openSet)
-      let lowestIndex = 0
-
-      for (let i = 0; i < arrayFromOpenSet.length; i++) {
-        if (arrayFromOpenSet[i].fScore < arrayFromOpenSet[lowestIndex].fScore) {
-          lowestIndex = i
-        }
-      }
-
-      currentSpot = arrayFromOpenSet[lowestIndex]
-
-      if (currentSpot === this.#grid.end) {
-        this.#p5.noLoop()
-      }
-
-      this.#configuration.removeFromOpenSet(currentSpot)
-      this.#configuration.appendSpotToClosedSet(currentSpot)
-
-      const neighbors = currentSpot.neighbors
-
-      for (const neighbor of neighbors) {
-        if (!this.#configuration.closedSet.has(neighbor) && !neighbor.wall) {
-          const tentativeGoalScore = currentSpot.goalScore + 1
-
-          if (this.#configuration.openSet.has(neighbor)) {
-            if (tentativeGoalScore < neighbor.goalScore) {
-              neighbor.goalScore = tentativeGoalScore
-              this.#recalculatePath(neighbor, currentSpot)
-            }
-          } else {
-            neighbor.goalScore = tentativeGoalScore
-            this.#configuration.appendSpotToOpenSet(neighbor)
-            this.#recalculatePath(neighbor, currentSpot)
-          }
-        }
-
-        neighbor.goalScore = currentSpot.goalScore + 1
-      }
-    } else {
+    if (this.#configuration.openSet.size <= 0) {
       this.#p5.noLoop()
       console.log('End node is not obtainable!');
+      return
+    }
+
+    this.#currentSpot = this.#findSpotWithLowestIndex()
+
+    if (this.#currentSpot === this.#grid.end) {
+      this.#p5.noLoop()
+    }
+
+    this.#configuration.removeFromOpenSet(this.#currentSpot)
+    this.#configuration.appendSpotToClosedSet(this.#currentSpot)
+
+    const neighbors = this.#currentSpot.neighbors
+
+    for (const neighbor of neighbors) {
+      if (!this.#configuration.closedSet.has(neighbor) && !neighbor.wall) {
+        this.#updateNeighboursScore(neighbor)
+      }
+
+      neighbor.goalScore = this.#currentSpot.goalScore + 1
     }
 
     this.#drawGrid()
     this.#drawClosedNodes()
     this.#drawDiscoveredNodes()
-    this.#drawResultPath(currentSpot)
+    this.#drawResultPath()
   }
 
   /**
    * @param {Spot} neighbor
-   * @param {Spot} currentSpot
    */
-  #recalculatePath(neighbor, currentSpot) {
+  #updateNeighboursScore(neighbor) {
+    const tentativeGoalScore = this.#currentSpot.goalScore + 1
+
+    if (this.#configuration.openSet.has(neighbor)) {
+      if (tentativeGoalScore < neighbor.goalScore) {
+        neighbor.goalScore = tentativeGoalScore
+        this.#recalculatePath(neighbor)
+      }
+    } else {
+      neighbor.goalScore = tentativeGoalScore
+      this.#configuration.appendSpotToOpenSet(neighbor)
+      this.#recalculatePath(neighbor)
+    }
+  }
+
+  /**
+   * @returns {Spot}
+   */
+  #findSpotWithLowestIndex() {
+    let lowestIndex = 0
+    const arrayFromOpenSet = Array.from(this.#configuration.openSet)
+
+    for (let i = 0; i < arrayFromOpenSet.length; i++) {
+      if (arrayFromOpenSet[i].fScore < arrayFromOpenSet[lowestIndex].fScore) {
+        lowestIndex = i
+      }
+    }
+
+    return arrayFromOpenSet[lowestIndex]
+  }
+
+  /**
+   * @param {Spot} neighbor
+   */
+  #recalculatePath(neighbor) {
     neighbor.heuristic = Sketch.#heuristic(neighbor, this.#grid.end)
     neighbor.fScore = neighbor.goalScore + neighbor.heuristic
-    neighbor.previous = currentSpot
+    neighbor.previous = this.#currentSpot
   }
 
   #drawGrid() {
@@ -122,14 +140,14 @@ export class Sketch {
     }
   }
 
-  #drawResultPath(currentSpot) {
-    if (!currentSpot) {
+  #drawResultPath() {
+    if (!this.#currentSpot) {
       console.error('currentSpot is undefined!');
       return
     }
 
     this.#path = []
-    let spot = currentSpot
+    let spot = this.#currentSpot
     this.#path.push(spot)
 
     while (spot.previous) {

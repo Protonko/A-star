@@ -149,6 +149,10 @@ export class Spot {
     return this.#wall
   }
 
+  get heuristic() {
+    return this.#heuristic
+  }
+
   /**
    * @param {number} value
    */
