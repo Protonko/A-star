@@ -13,11 +13,17 @@ export class Sketch {
    */
   #grid
 
+  /**
+   * @type {Array<Spot>}
+   */
+  #path
+
   #p5
 
   constructor() {
     this.#configuration = new Configuration()
     this.#grid = new Grid(this.#configuration.cols, this.#configuration.rows)
+    this.#path = []
     new P5(this.#sketch)
   }
 
@@ -34,6 +40,8 @@ export class Sketch {
   }
 
   #draw() {
+    let currentSpot
+
     if (this.#configuration.openSet.size > 0) {
       const arrayFromOpenSet = Array.from(this.#configuration.openSet)
       let lowestIndex = 0
@@ -44,10 +52,10 @@ export class Sketch {
         }
       }
 
-      const currentSpot = arrayFromOpenSet[lowestIndex]
+      currentSpot = arrayFromOpenSet[lowestIndex]
 
       if (currentSpot === this.#grid.end) {
-        console.log('DONE');
+        this.#p5.noLoop()
       }
 
       this.#configuration.removeFromOpenSet(currentSpot)
@@ -68,8 +76,9 @@ export class Sketch {
             this.#configuration.appendSpotToOpenSet(neighbor)
           }
 
-          neighbor.heuristic = this.#heuristic(neighbor, this.#grid.end)
+          neighbor.heuristic = Sketch.#heuristic(neighbor, this.#grid.end)
           neighbor.fScore = neighbor.goalScore + neighbor.heuristic
+          neighbor.previous = currentSpot
         }
 
         neighbor.goalScore = currentSpot.goalScore + 1
@@ -81,6 +90,7 @@ export class Sketch {
     this.#drawGrid()
     this.#drawClosedNodes()
     this.#drawDiscoveredNodes()
+    this.#drawResultPath(currentSpot)
   }
 
   #drawGrid() {
@@ -103,12 +113,33 @@ export class Sketch {
     }
   }
 
+  #drawResultPath(currentSpot) {
+    if (!currentSpot) {
+      console.error('currentSpot is undefined!');
+      return
+    }
+
+    this.#path = []
+    let spot = currentSpot
+    this.#path.push(spot)
+
+    while (spot.previous) {
+      this.#path.push(spot.previous)
+      spot = spot.previous
+    }
+
+
+    for (let i = 0; i < this.#path.length; i++) {
+      this.#path[i].show(this.#p5, this.#p5.color(0, 0, 255))
+    }
+  }
+
   /**
    * @param {Spot} neighbor
    * @param {Spot} endSpot
    * @returns {number}
    */
-  #heuristic(neighbor, endSpot) {
-    return this.#p5.dist(neighbor.x, neighbor.y, endSpot.x, endSpot.y)
+  static #heuristic(neighbor, endSpot) {
+    return Math.abs(neighbor.x - endSpot.x) + Math.abs(neighbor.y - endSpot.y)
   }
 }

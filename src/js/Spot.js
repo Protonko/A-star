@@ -40,6 +40,11 @@ export class Spot {
   #neighbors
 
   /**
+   * @type {Spot | null}
+   */
+  #previous
+
+  /**
    * @param {number} x
    * @param {number} y
    * @param {number} width
@@ -54,6 +59,7 @@ export class Spot {
     this.#goalScore = 0
     this.#heuristic = 0
     this.#neighbors = []
+    this.#previous = null
   }
 
   /**
@@ -111,6 +117,10 @@ export class Spot {
     return this.#goalScore
   }
 
+  get previous() {
+    return this.#previous
+  }
+
   /**
    * @param {number} value
    */
@@ -130,5 +140,12 @@ export class Spot {
    */
   set heuristic(value) {
     return this.#heuristic = value
+  }
+
+  /**
+   * @param {Spot} value
+   */
+  set previous(value) {
+    this.#previous = value
   }
 }
