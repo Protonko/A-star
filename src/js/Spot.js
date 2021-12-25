@@ -62,12 +62,12 @@ export class Spot {
    */
   show(p5, color) {
     p5.fill(color)
-    p5.stroke(0)
+    p5.noStroke()
     p5.rect(
       this.#x * this.#width,
       this.#y * this.#height,
-      this.#width,
-      this.#height,
+      this.#width - 1,
+      this.#height - 1,
     )
   }
 
@@ -91,8 +91,20 @@ export class Spot {
     }
   }
 
+  get x() {
+    return this.#x
+  }
+
+  get y() {
+    return this.#y
+  }
+
   get fScore() {
     return this.#fScore
+  }
+
+  get neighbors() {
+    return this.#neighbors
   }
 
   get goalScore() {
@@ -106,7 +118,17 @@ export class Spot {
     return this.#goalScore = value
   }
 
-  get neighbors() {
-    return this.#neighbors
+  /**
+   * @param {number} value
+   */
+  set fScore(value) {
+    return this.#fScore = value
+  }
+
+  /**
+   * @param {number} value
+   */
+  set heuristic(value) {
+    return this.#heuristic = value
   }
 }

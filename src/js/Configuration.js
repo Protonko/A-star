@@ -73,11 +73,4 @@ export class Configuration {
   removeFromOpenSet(spot) {
     this.#openSet.delete(spot)
   }
-
-  /**
-   * @param {Spot} spot
-   */
-  removeFromClosedSet(spot) {
-    this.#closedSet.delete(spot)
-  }
 }
