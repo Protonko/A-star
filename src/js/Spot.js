@@ -65,11 +65,8 @@ export class Spot {
     this.#heuristic = 0
     this.#neighbors = []
     this.#previous = null
-    this.#wall = false
 
-    if (Math.random() < 0.1) {
-      this.#wall = true
-    }
+    this.#wall = Math.random() < 0.3;
   }
 
   /**
@@ -109,6 +106,18 @@ export class Spot {
     }
     if (this.#y > 0) {
       this.#neighbors.push(grid[this.#x][this.#y - 1])
+    }
+    if (this.#x > 0 && this.#y > 0) {
+      this.#neighbors.push(grid[this.#x - 1][this.#y - 1])
+    }
+    if (this.#x < cols - 1 && this.#y > 0) {
+      this.#neighbors.push(grid[this.#x + 1][this.#y - 1])
+    }
+    if (this.#x > 0 && this.#y < rows - 1) {
+      this.#neighbors.push(grid[this.#x - 1][this.#y + 1])
+    }
+    if (this.#x < cols - 1 && this.#y < rows - 1) {
+      this.#neighbors.push(grid[this.#x + 1][this.#y + 1])
     }
   }
 

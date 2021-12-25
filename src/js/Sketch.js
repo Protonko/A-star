@@ -70,15 +70,13 @@ export class Sketch {
           if (this.#configuration.openSet.has(neighbor)) {
             if (tentativeGoalScore < neighbor.goalScore) {
               neighbor.goalScore = tentativeGoalScore
+              this.#recalculatePath(neighbor, currentSpot)
             }
           } else {
             neighbor.goalScore = tentativeGoalScore
             this.#configuration.appendSpotToOpenSet(neighbor)
+            this.#recalculatePath(neighbor, currentSpot)
           }
-
-          neighbor.heuristic = Sketch.#heuristic(neighbor, this.#grid.end)
-          neighbor.fScore = neighbor.goalScore + neighbor.heuristic
-          neighbor.previous = currentSpot
         }
 
         neighbor.goalScore = currentSpot.goalScore + 1
@@ -92,6 +90,16 @@ export class Sketch {
     this.#drawClosedNodes()
     this.#drawDiscoveredNodes()
     this.#drawResultPath(currentSpot)
+  }
+
+  /**
+   * @param {Spot} neighbor
+   * @param {Spot} currentSpot
+   */
+  #recalculatePath(neighbor, currentSpot) {
+    neighbor.heuristic = Sketch.#heuristic(neighbor, this.#grid.end)
+    neighbor.fScore = neighbor.goalScore + neighbor.heuristic
+    neighbor.previous = currentSpot
   }
 
   #drawGrid() {
