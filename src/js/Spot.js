@@ -22,17 +22,22 @@ export class Spot {
   /**
    * @type {number}
    */
-  #f
+  #fScore
 
   /**
    * @type {number}
    */
-  #g
+  #goalScore
 
   /**
    * @type {number}
    */
-  #h
+  #heuristic
+
+  /**
+   * @type {Array<Spot>}
+   */
+  #neighbors
 
   /**
    * @param {number} x
@@ -45,10 +50,10 @@ export class Spot {
     this.#y = y
     this.#width = width
     this.#height = height
-    this.#f = 0
-    this.#g = 0
-    this.#h = 0
-
+    this.#fScore = 0
+    this.#goalScore = 0
+    this.#heuristic = 0
+    this.#neighbors = []
   }
 
   /**
@@ -66,7 +71,42 @@ export class Spot {
     )
   }
 
-  f() {
-    return this.#f
+  /**
+   * @param grid
+   * @param cols
+   * @param rows
+   */
+  appendNeighbors(grid, cols, rows) {
+    if (this.#x < cols - 1) {
+      this.#neighbors.push(grid[this.#x + 1][this.#y])
+    }
+    if (this.#x > 0) {
+      this.#neighbors.push(grid[this.#x - 1][this.#y])
+    }
+    if (this.#y < rows - 1) {
+      this.#neighbors.push(grid[this.#x][this.#y + 1])
+    }
+    if (this.#y > 0) {
+      this.#neighbors.push(grid[this.#x][this.#y - 1])
+    }
+  }
+
+  get fScore() {
+    return this.#fScore
+  }
+
+  get goalScore() {
+    return this.#goalScore
+  }
+
+  /**
+   * @param {number} value
+   */
+  set goalScore(value) {
+    return this.#goalScore = value
+  }
+
+  get neighbors() {
+    return this.#neighbors
   }
 }

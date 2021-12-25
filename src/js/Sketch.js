@@ -36,7 +36,7 @@ export class Sketch {
       let lowestIndex = 0
 
       for (let i = 0; i < arrayFromOpenSet.length; i++) {
-        if (arrayFromOpenSet[i].f < arrayFromOpenSet[lowestIndex]) {
+        if (arrayFromOpenSet[i].fScore < arrayFromOpenSet[lowestIndex]) {
           lowestIndex = i
         }
       }
@@ -49,6 +49,25 @@ export class Sketch {
 
       this.#configuration.removeFromOpenSet(currentSpot)
       this.#configuration.appendSpotToClosedSet(currentSpot)
+
+      const neighbors = currentSpot.neighbors
+
+      for (const neighbor of neighbors) {
+        if (!this.#configuration.closedSet.has(neighbor)) {
+          const tentativeGoalScore = currentSpot.goalScore + 1
+
+          if (this.#configuration.openSet.has(neighbor)) {
+            if (tentativeGoalScore < neighbor.goalScore) {
+              neighbor.goalScore = tentativeGoalScore
+            }
+          } else {
+            neighbor.goalScore = tentativeGoalScore
+            this.#configuration.appendSpotToOpenSet(neighbor)
+          }
+        }
+
+        neighbor.goalScore = currentSpot.goalScore + 1
+      }
     } else {
 
     }
