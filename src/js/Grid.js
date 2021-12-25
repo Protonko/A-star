@@ -1,5 +1,5 @@
 import {Spot} from './Spot'
-import {Configuration} from './Configuration';
+import {Configuration} from './Configuration'
 
 export class Grid {
   /**
@@ -43,7 +43,7 @@ export class Grid {
 
     this.#start = this.#grid[0][0]
     this.#end = this.#grid[cols - 1][rows - 1]
-    this.#configuration.openSet.add(this.#start)
+    this.#configuration.appendSpotToOpenSet(this.#start)
   }
 
   /**
@@ -60,5 +60,9 @@ export class Grid {
 
   get grid() {
     return this.#grid
+  }
+
+  get end() {
+    return this.#end
   }
 }

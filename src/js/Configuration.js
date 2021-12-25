@@ -28,11 +28,13 @@ export class Configuration {
   }
 
   get openSet() {
-    return this.#openSet
+    // Prevent add and delete
+    return new Set([...this.#openSet])
   }
 
   get closedSet() {
-    return this.#closedSet
+    // Prevent add and delete
+    return new Set([...this.#closedSet])
   }
 
   get cols() {
@@ -49,5 +51,33 @@ export class Configuration {
 
   get height() {
     return this.#height
+  }
+
+  /**
+   * @param {Spot} spot
+   */
+  appendSpotToOpenSet(spot) {
+    this.#openSet.add(spot)
+  }
+
+  /**
+   * @param {Spot} spot
+   */
+  appendSpotToClosedSet(spot) {
+    this.#closedSet.add(spot)
+  }
+
+  /**
+   * @param {Spot} spot
+   */
+  removeFromOpenSet(spot) {
+    this.#openSet.delete(spot)
+  }
+
+  /**
+   * @param {Spot} spot
+   */
+  removeFromClosedSet(spot) {
+    this.#closedSet.delete(spot)
   }
 }

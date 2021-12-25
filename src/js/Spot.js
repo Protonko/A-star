@@ -65,4 +65,8 @@ export class Spot {
       this.#height,
     )
   }
+
+  f() {
+    return this.#f
+  }
 }
