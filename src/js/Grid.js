@@ -58,7 +58,7 @@ export class Grid {
 
     for (let i = 0; i < cols; i++) {
       for (let k = 0; k < rows; k++) {
-        this.#grid[i][k].appendNeighbors(this.#grid)
+        this.#grid[i][k].appendNeighbors(this.#grid, cols, rows)
       }
     }
   }

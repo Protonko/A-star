@@ -35,7 +35,6 @@ export class Sketch {
 
   #draw() {
     if (this.#configuration.openSet.size > 0) {
-      console.log(this.#configuration.openSet);
       const arrayFromOpenSet = Array.from(this.#configuration.openSet)
       let lowestIndex = 0
 
@@ -46,7 +45,6 @@ export class Sketch {
       }
 
       const currentSpot = arrayFromOpenSet[lowestIndex]
-
 
       if (currentSpot === this.#grid.end) {
         console.log('DONE');

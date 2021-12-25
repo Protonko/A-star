@@ -14,8 +14,8 @@ export class Configuration {
    */
   #closedSet = new Set()
 
-  #cols = 5
-  #rows = 5
+  #cols = 25
+  #rows = 25
   #width = 400
   #height = 400
 
