@@ -64,7 +64,7 @@ export class Sketch {
       const neighbors = currentSpot.neighbors
 
       for (const neighbor of neighbors) {
-        if (!this.#configuration.closedSet.has(neighbor)) {
+        if (!this.#configuration.closedSet.has(neighbor) && !neighbor.wall) {
           const tentativeGoalScore = currentSpot.goalScore + 1
 
           if (this.#configuration.openSet.has(neighbor)) {
@@ -84,7 +84,8 @@ export class Sketch {
         neighbor.goalScore = currentSpot.goalScore + 1
       }
     } else {
-
+      this.#p5.noLoop()
+      console.log('End node is not obtainable!');
     }
 
     this.#drawGrid()
@@ -96,20 +97,20 @@ export class Sketch {
   #drawGrid() {
     for (let i = 0; i < this.#configuration.cols; i++) {
       for (let k = 0; k < this.#configuration.rows; k++) {
-        this.#grid.grid[i][k].show(this.#p5, this.#p5.color(255))
+        this.#grid.grid[i][k].draw(this.#p5, this.#p5.color(255))
       }
     }
   }
 
   #drawClosedNodes() {
     for (let spot of this.#configuration.closedSet.values()) {
-      spot.show(this.#p5, this.#p5.color(255, 0, 0))
+      spot.draw(this.#p5, this.#p5.color(255, 0, 0))
     }
   }
 
   #drawDiscoveredNodes() {
     for (let spot of this.#configuration.openSet.values()) {
-      spot.show(this.#p5, this.#p5.color(0, 255, 0))
+      spot.draw(this.#p5, this.#p5.color(0, 255, 0))
     }
   }
 
@@ -130,7 +131,7 @@ export class Sketch {
 
 
     for (let i = 0; i < this.#path.length; i++) {
-      this.#path[i].show(this.#p5, this.#p5.color(0, 0, 255))
+      this.#path[i].draw(this.#p5, this.#p5.color(0, 0, 255))
     }
   }
 

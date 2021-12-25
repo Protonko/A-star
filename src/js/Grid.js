@@ -32,6 +32,10 @@ export class Grid {
     this.#start = this.#grid[0][0]
     this.#end = this.#grid[cols - 1][rows - 1]
     this.#configuration.appendSpotToOpenSet(this.#start)
+
+    // start and end nodes always must be obtainable
+    this.#start.wall = false
+    this.#end.wall = false
   }
 
   /**

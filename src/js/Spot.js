@@ -45,6 +45,11 @@ export class Spot {
   #previous
 
   /**
+   * @type boolean
+   */
+  #wall
+
+  /**
    * @param {number} x
    * @param {number} y
    * @param {number} width
@@ -60,14 +65,24 @@ export class Spot {
     this.#heuristic = 0
     this.#neighbors = []
     this.#previous = null
+    this.#wall = false
+
+    if (Math.random() < 0.1) {
+      this.#wall = true
+    }
   }
 
   /**
    * @param p5 - p5 instance
    * @param {p5.Color} color
    */
-  show(p5, color) {
+  draw(p5, color) {
     p5.fill(color)
+
+    if (this.#wall) {
+      p5.fill(0)
+    }
+
     p5.noStroke()
     p5.rect(
       this.#x * this.#width,
@@ -121,6 +136,10 @@ export class Spot {
     return this.#previous
   }
 
+  get wall() {
+    return this.#wall
+  }
+
   /**
    * @param {number} value
    */
@@ -147,5 +166,12 @@ export class Spot {
    */
   set previous(value) {
     this.#previous = value
+  }
+
+  /**
+   * @param {boolean} value
+   */
+  set wall(value) {
+    this.#wall = value
   }
 }
