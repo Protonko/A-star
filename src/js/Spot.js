@@ -80,18 +80,29 @@ export class Spot {
    * @param {string} color
    */
   draw(color) {
+    this.#configuration.context.beginPath();
     this.#configuration.context.fillStyle = color
 
     if (this.#wall) {
       this.#configuration.context.fillStyle = '#000000'
+      this.#configuration.context.ellipse(
+        this.#x * this.#width + this.#width / 2,
+        this.#y * this.#height + this.#height / 2,
+        this.#width / 2,
+        this.#height / 2,
+        0,
+        0,
+        2 * Math.PI
+      );
+      this.#configuration.context.fill();
+    } else {
+      this.#configuration.context.fillRect(
+        this.#x * this.#width,
+        this.#y * this.#height,
+        this.#width,
+        this.#height,
+      )
     }
-
-    this.#configuration.context.fillRect(
-      this.#x * this.#width,
-      this.#y * this.#height,
-      this.#width - 1,
-      this.#height - 1,
-    )
   }
 
   /**

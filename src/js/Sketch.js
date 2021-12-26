@@ -122,13 +122,13 @@ export class Sketch {
 
   #drawClosedNodes() {
     for (let spot of this.#configuration.closedSet.values()) {
-      spot.draw('red')
+      spot.draw('#f29c96')
     }
   }
 
   #drawDiscoveredNodes() {
     for (let spot of this.#configuration.openSet.values()) {
-      spot.draw('green')
+      spot.draw('#b5f7c4')
     }
   }
 
@@ -152,6 +152,8 @@ export class Sketch {
 
     for (let i = 0; i < this.#path.length; i++) {
       this.#configuration.context.strokeStyle = 'cadetblue'
+      this.#configuration.context.lineWidth = 10
+      this.#configuration.context.lineCap = 'round'
       if (i !== 0) {
         this.#configuration.context.moveTo(
           this.#path[i - 1].x * this.#path[i - 1].width + this.#path[i - 1].width / 2,
@@ -164,8 +166,6 @@ export class Sketch {
        this.#path[i].y * this.#path[i].height + this.#path[i].height / 2
       )
       this.#configuration.context.stroke()
-
-      this.#path[i].draw('blue')
     }
     this.#configuration.context.closePath()
   }
