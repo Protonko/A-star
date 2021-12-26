@@ -216,4 +216,12 @@ export class Spot {
   set wall(value) {
     this.#wall = value
   }
+
+  get width() {
+    return this.#width
+  }
+
+  get height() {
+    return this.#height
+  }
 }

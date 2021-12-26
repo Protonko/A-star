@@ -148,9 +148,26 @@ export class Sketch {
     }
 
 
+    this.#configuration.context.beginPath()
+
     for (let i = 0; i < this.#path.length; i++) {
+      this.#configuration.context.strokeStyle = 'cadetblue'
+      if (i !== 0) {
+        this.#configuration.context.moveTo(
+          this.#path[i - 1].x * this.#path[i - 1].width + this.#path[i - 1].width / 2,
+          this.#path[i - 1].y * this.#path[i - 1].height + this.#path[i - 1].height / 2,
+        )
+      }
+
+      this.#configuration.context.lineTo(
+        this.#path[i].x * this.#path[i].width + this.#path[i].width / 2,
+       this.#path[i].y * this.#path[i].height + this.#path[i].height / 2
+      )
+      this.#configuration.context.stroke()
+
       this.#path[i].draw('blue')
     }
+    this.#configuration.context.closePath()
   }
 
   #animate = () => {
