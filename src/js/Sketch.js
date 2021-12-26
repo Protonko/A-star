@@ -1,10 +1,9 @@
-import P5 from 'p5'
-import {Configuration} from './Configuration'
+import {ConfigurationSingleton} from './ConfigurationSingleton'
 import {Grid} from './Grid'
 
 export class Sketch {
   /**
-   * @type Configuration
+   * @type {ConfigurationSingleton}
    */
   #configuration
 
@@ -23,31 +22,24 @@ export class Sketch {
    */
   #currentSpot
 
-  #p5
+  /**
+   * @type {boolean}
+   */
+  #searchIsOver
 
   constructor() {
-    this.#configuration = new Configuration()
+    this.#configuration = new ConfigurationSingleton()
     this.#grid = new Grid(this.#configuration.cols, this.#configuration.rows)
     this.#path = []
     this.#currentSpot = null
-    new P5(this.#sketch)
-  }
+    this.#searchIsOver = false
 
-  /**
-   * @param p5 - p5 instance
-   */
-  #sketch = (p5) => {
-    this.#p5 = p5
-    p5.setup = () => {
-      p5.createCanvas(400, 400)
-      p5.background(0)
-    }
-    p5.draw = () => this.#draw()
+    this.#animate()
   }
 
   #draw() {
     if (this.#configuration.openSet.size <= 0) {
-      this.#p5.noLoop()
+      this.#searchIsOver = true
       console.log('End node is not obtainable!');
       return
     }
@@ -55,7 +47,7 @@ export class Sketch {
     this.#currentSpot = this.#findSpotWithLowestIndex()
 
     if (this.#currentSpot === this.#grid.end) {
-      this.#p5.noLoop()
+      this.#searchIsOver = true
     }
 
     this.#configuration.removeFromOpenSet(this.#currentSpot)
@@ -123,20 +115,20 @@ export class Sketch {
   #drawGrid() {
     for (let i = 0; i < this.#configuration.cols; i++) {
       for (let k = 0; k < this.#configuration.rows; k++) {
-        this.#grid.grid[i][k].draw(this.#p5, this.#p5.color(255))
+        this.#grid.grid[i][k].draw('#FFFFFF')
       }
     }
   }
 
   #drawClosedNodes() {
     for (let spot of this.#configuration.closedSet.values()) {
-      spot.draw(this.#p5, this.#p5.color(255, 0, 0))
+      spot.draw('red')
     }
   }
 
   #drawDiscoveredNodes() {
     for (let spot of this.#configuration.openSet.values()) {
-      spot.draw(this.#p5, this.#p5.color(0, 255, 0))
+      spot.draw('green')
     }
   }
 
@@ -157,7 +149,15 @@ export class Sketch {
 
 
     for (let i = 0; i < this.#path.length; i++) {
-      this.#path[i].draw(this.#p5, this.#p5.color(0, 0, 255))
+      this.#path[i].draw('blue')
+    }
+  }
+
+  #animate = () => {
+    this.#draw()
+
+    if (!this.#searchIsOver) {
+      requestAnimationFrame(this.#animate)
     }
   }
 

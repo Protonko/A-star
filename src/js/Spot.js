@@ -1,3 +1,5 @@
+import {ConfigurationSingleton} from './ConfigurationSingleton';
+
 export class Spot {
   /**
    * @type {number}
@@ -50,6 +52,11 @@ export class Spot {
   #wall
 
   /**
+   * @type {ConfigurationSingleton}
+   */
+  #configuration
+
+  /**
    * @param {number} x
    * @param {number} y
    * @param {number} width
@@ -65,23 +72,21 @@ export class Spot {
     this.#heuristic = 0
     this.#neighbors = []
     this.#previous = null
-
+    this.#configuration = new ConfigurationSingleton()
     this.#wall = Math.random() < 0.3;
   }
 
   /**
-   * @param p5 - p5 instance
-   * @param {p5.Color} color
+   * @param {string} color
    */
-  draw(p5, color) {
-    p5.fill(color)
+  draw(color) {
+    this.#configuration.context.fillStyle = color
 
     if (this.#wall) {
-      p5.fill(0)
+      this.#configuration.context.fillStyle = '#000000'
     }
 
-    p5.noStroke()
-    p5.rect(
+    this.#configuration.context.fillRect(
       this.#x * this.#width,
       this.#y * this.#height,
       this.#width - 1,
@@ -90,9 +95,9 @@ export class Spot {
   }
 
   /**
-   * @param grid
-   * @param cols
-   * @param rows
+   * @param {Array<Array<Spot>>} grid
+   * @param {number} cols
+   * @param {number} rows
    */
   appendNeighbors(grid, cols, rows) {
     if (this.#x < cols - 1) {
@@ -121,34 +126,58 @@ export class Spot {
     }
   }
 
+  /**
+   * @returns {number}
+   */
   get x() {
     return this.#x
   }
 
+  /**
+   * @returns {number}
+   */
   get y() {
     return this.#y
   }
 
+  /**
+   * @returns {number}
+   */
   get fScore() {
     return this.#fScore
   }
 
+  /**
+   * @returns {Array<Spot>}
+   */
   get neighbors() {
     return this.#neighbors
   }
 
+  /**
+   * @returns {number}
+   */
   get goalScore() {
     return this.#goalScore
   }
 
+  /**
+   * @returns {Spot|null}
+   */
   get previous() {
     return this.#previous
   }
 
+  /**
+   * @returns {boolean}
+   */
   get wall() {
     return this.#wall
   }
 
+  /**
+   * @returns {number}
+   */
   get heuristic() {
     return this.#heuristic
   }

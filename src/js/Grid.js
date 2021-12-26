@@ -1,9 +1,9 @@
 import {Spot} from './Spot'
-import {Configuration} from './Configuration'
+import {ConfigurationSingleton} from './ConfigurationSingleton'
 
 export class Grid {
   /**
-   * @type Configuration
+   * @type {ConfigurationSingleton}
    */
   #configuration
 
@@ -27,15 +27,15 @@ export class Grid {
    * @param {number} rows
    */
   constructor(cols, rows) {
-    this.#configuration = new Configuration()
+    this.#configuration = new ConfigurationSingleton()
     this.#createGrid(cols,rows)
     this.#start = this.#grid[0][0]
     this.#end = this.#grid[cols - 1][rows - 1]
-    this.#configuration.appendSpotToOpenSet(this.#start)
 
     // start and end nodes always must be obtainable
     this.#start.wall = false
     this.#end.wall = false
+    this.#configuration.appendSpotToOpenSet(this.#start)
   }
 
   /**
@@ -67,10 +67,16 @@ export class Grid {
     }
   }
 
+  /**
+   * @returns {Array<Array<Spot>>}
+   */
   get grid() {
     return this.#grid
   }
 
+  /**
+   * @returns {Spot}
+   */
   get end() {
     return this.#end
   }
