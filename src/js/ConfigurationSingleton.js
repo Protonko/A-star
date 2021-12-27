@@ -20,6 +20,15 @@ export class ConfigurationSingleton {
   #canvas
 
   /**
+   * @type {Object}
+   * @param {number} mouse.x
+   * @param {number} mouse.y
+   * @param {number} mouse.width
+   * @param {number} mouse.height
+   */
+  #mouse
+
+  /**
    * @type {CanvasRenderingContext2D}
    */
   #context
@@ -29,14 +38,25 @@ export class ConfigurationSingleton {
   #height = 400
 
   constructor() {
+    if (!ConfigurationSingleton.#instance) {
+      ConfigurationSingleton.#instance = this
+    }
+
     this.#canvas = document.getElementById('canvas-area')
     this.#context = this.#canvas.getContext('2d')
     this.#canvas.width = this.#width
     this.#canvas.height = this.#height
-
-    if (!ConfigurationSingleton.#instance) {
-      ConfigurationSingleton.#instance = this
+    this.#mouse = {
+      x: 0,
+      y: 0,
+      width: 0.01,
+      height: 0.1,
     }
+
+    this.#canvas.addEventListener('mousemove', (event) => {
+      this.#mouse.x = event.x - this.#canvas.getBoundingClientRect().left
+      this.#mouse.y = event.y - this.#canvas.getBoundingClientRect().top
+    })
 
     return ConfigurationSingleton.#instance
   }
@@ -90,6 +110,13 @@ export class ConfigurationSingleton {
    */
   get height() {
     return this.#height
+  }
+
+  /**
+   * @returns {Object} mouse
+   */
+  get mouse() {
+    return this.#mouse
   }
 
   /**

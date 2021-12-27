@@ -1,5 +1,6 @@
 import {ConfigurationSingleton} from './ConfigurationSingleton'
 import {Grid} from './Grid'
+import {COLORS} from './static';
 
 export class Sketch {
   /**
@@ -27,6 +28,11 @@ export class Sketch {
    */
   #searchIsOver
 
+  /**
+   * @type {boolean}
+   */
+  #searchIsStarted = false
+
   constructor() {
     this.#configuration = new ConfigurationSingleton()
     this.#grid = new Grid(this.#configuration.cols, this.#configuration.rows)
@@ -34,12 +40,18 @@ export class Sketch {
     this.#currentSpot = null
     this.#searchIsOver = false
 
+    document.querySelector('#BTN').addEventListener('click', () => {
+      this.#findShortestPath()
+    })
+
     this.#animate()
   }
 
-  #draw() {
+  #findShortestPath() {
+    this.#searchIsStarted = true
     if (this.#configuration.openSet.size <= 0) {
       this.#searchIsOver = true
+      this.#searchIsStarted = false
       console.log('End node is not obtainable!');
       return
     }
@@ -48,6 +60,7 @@ export class Sketch {
 
     if (this.#currentSpot === this.#grid.end) {
       this.#searchIsOver = true
+      this.#searchIsStarted = false
     }
 
     this.#configuration.removeFromOpenSet(this.#currentSpot)
@@ -63,7 +76,6 @@ export class Sketch {
       neighbor.goalScore = this.#currentSpot.goalScore + 1
     }
 
-    this.#drawGrid()
     this.#drawClosedNodes()
     this.#drawDiscoveredNodes()
     this.#drawResultPath()
@@ -115,20 +127,20 @@ export class Sketch {
   #drawGrid() {
     for (let i = 0; i < this.#configuration.cols; i++) {
       for (let k = 0; k < this.#configuration.rows; k++) {
-        this.#grid.grid[i][k].draw('#FFFFFF')
+        this.#grid.grid[i][k].draw(COLORS.white)
       }
     }
   }
 
   #drawClosedNodes() {
     for (let spot of this.#configuration.closedSet.values()) {
-      spot.draw('#f29c96')
+      spot.draw(COLORS.wewak)
     }
   }
 
   #drawDiscoveredNodes() {
     for (let spot of this.#configuration.openSet.values()) {
-      spot.draw('#b5f7c4')
+      spot.draw(COLORS.magicMint)
     }
   }
 
@@ -151,7 +163,7 @@ export class Sketch {
     this.#configuration.context.beginPath()
 
     for (let i = 0; i < this.#path.length; i++) {
-      this.#configuration.context.strokeStyle = 'cadetblue'
+      this.#configuration.context.strokeStyle = COLORS.wildBlueYonder
       this.#configuration.context.lineWidth = 10
       this.#configuration.context.lineCap = 'round'
       if (i !== 0) {
@@ -171,7 +183,11 @@ export class Sketch {
   }
 
   #animate = () => {
-    this.#draw()
+    this.#drawGrid()
+
+    if (this.#searchIsStarted) {
+      this.#findShortestPath()
+    }
 
     if (!this.#searchIsOver) {
       requestAnimationFrame(this.#animate)

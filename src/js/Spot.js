@@ -1,4 +1,6 @@
 import {ConfigurationSingleton} from './ConfigurationSingleton';
+import {COLORS} from './static';
+import {collision} from './utils';
 
 export class Spot {
   /**
@@ -82,19 +84,41 @@ export class Spot {
   draw(color) {
     this.#configuration.context.beginPath();
     this.#configuration.context.fillStyle = color
+    const mouse = this.#configuration.mouse
+    const spotMouse = {
+      x: this.#x * this.#width,
+      y: this.#y * this.#height,
+      width: this.#width - 1,
+      height: this.#height - 1,
+    }
 
     if (this.#wall) {
-      this.#configuration.context.fillStyle = '#000000'
+      this.#configuration.context.fillStyle = COLORS.white
+      this.#configuration.context.fillRect(
+        this.#x * this.#width,
+        this.#y * this.#height,
+        this.#width,
+        this.#height,
+      )
+      this.#configuration.context.fillStyle = COLORS.black
       this.#configuration.context.ellipse(
         this.#x * this.#width + this.#width / 2,
         this.#y * this.#height + this.#height / 2,
-        this.#width / 2,
-        this.#height / 2,
+        this.#width / 3,
+        this.#height / 3,
         0,
         0,
         2 * Math.PI
       );
       this.#configuration.context.fill();
+    } else if (collision(spotMouse, mouse)) {
+      this.#configuration.context.strokeStyle = COLORS.black
+      this.#configuration.context.strokeRect(
+        this.#x * this.#width,
+        this.#y * this.#height,
+        this.#width,
+        this.#height,
+      )
     } else {
       this.#configuration.context.fillRect(
         this.#x * this.#width,
