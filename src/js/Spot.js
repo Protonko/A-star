@@ -1,6 +1,6 @@
 import {ConfigurationSingleton} from './ConfigurationSingleton';
-import {COLORS} from './static';
-import {collision} from './utils';
+import {COLORS, SPOT_TYPE} from './static';
+import {Utils} from './utils';
 
 export class Spot {
   /**
@@ -49,14 +49,14 @@ export class Spot {
   #previous
 
   /**
-   * @type boolean
-   */
-  #wall
-
-  /**
    * @type {ConfigurationSingleton}
    */
   #configuration
+
+  /**
+   * @type {string} - SPOT_TYPE
+   */
+  #type
 
   /**
    * @param {number} x
@@ -75,16 +75,77 @@ export class Spot {
     this.#neighbors = []
     this.#previous = null
     this.#configuration = new ConfigurationSingleton()
-    this.#wall = Math.random() < 0.3;
+    this.#type = Math.random() < 0.3 ? SPOT_TYPE.WALL : SPOT_TYPE.DEFAULT
+  }
+
+  #drawWall() {
+    this.#configuration.context.beginPath();
+    this.#configuration.context.fillStyle = COLORS.white
+    this.#configuration.context.fillRect(
+      this.#x * this.#width,
+      this.#y * this.#height,
+      this.#width,
+      this.#height,
+    )
+    this.#configuration.context.fillStyle = COLORS.black
+    this.#configuration.context.ellipse(
+      this.#x * this.#width + this.#width / 2,
+      this.#y * this.#height + this.#height / 2,
+      this.#width / 3,
+      this.#height / 3,
+      0,
+      0,
+      2 * Math.PI
+    )
+    this.#configuration.context.fill()
+    this.#configuration.context.closePath()
+  }
+
+  #drawSelectedSpot() {
+    this.#configuration.context.strokeStyle = COLORS.black
+    this.#configuration.context.strokeRect(
+      this.#x * this.#width,
+      this.#y * this.#height,
+      this.#width,
+      this.#height,
+    )
+  }
+
+  /**
+   * @param {string} color
+   * @returns {string | undefined}
+   */
+  #setSpotColor(color) {
+    switch (this.#type) {
+      case SPOT_TYPE.START_NODE:
+        return COLORS.azureRadiance
+      case SPOT_TYPE.END_NODE:
+        return COLORS.california
+      case SPOT_TYPE.DEFAULT:
+        return color
+      default:
+        console.error('Incorrect type!')
+        break
+    }
+  }
+
+  /**
+   * @param {string} color
+   */
+  #drawSpot(color) {
+    this.#configuration.context.fillStyle = this.#setSpotColor(color)
+    this.#configuration.context.fillRect(
+      this.#x * this.#width,
+      this.#y * this.#height,
+      this.#width,
+      this.#height,
+    )
   }
 
   /**
    * @param {string} color
    */
   draw(color) {
-    this.#configuration.context.beginPath();
-    this.#configuration.context.fillStyle = color
-    const mouse = this.#configuration.mouse
     const spotMouse = {
       x: this.#x * this.#width,
       y: this.#y * this.#height,
@@ -92,40 +153,12 @@ export class Spot {
       height: this.#height - 1,
     }
 
-    if (this.#wall) {
-      this.#configuration.context.fillStyle = COLORS.white
-      this.#configuration.context.fillRect(
-        this.#x * this.#width,
-        this.#y * this.#height,
-        this.#width,
-        this.#height,
-      )
-      this.#configuration.context.fillStyle = COLORS.black
-      this.#configuration.context.ellipse(
-        this.#x * this.#width + this.#width / 2,
-        this.#y * this.#height + this.#height / 2,
-        this.#width / 3,
-        this.#height / 3,
-        0,
-        0,
-        2 * Math.PI
-      );
-      this.#configuration.context.fill();
-    } else if (collision(spotMouse, mouse)) {
-      this.#configuration.context.strokeStyle = COLORS.black
-      this.#configuration.context.strokeRect(
-        this.#x * this.#width,
-        this.#y * this.#height,
-        this.#width,
-        this.#height,
-      )
+    if (this.#type === SPOT_TYPE.WALL) {
+      this.#drawWall()
+    } else if (Utils.collision(spotMouse, this.#configuration.mouse)) {
+      this.#drawSelectedSpot()
     } else {
-      this.#configuration.context.fillRect(
-        this.#x * this.#width,
-        this.#y * this.#height,
-        this.#width,
-        this.#height,
-      )
+      this.#drawSpot(color)
     }
   }
 
@@ -204,10 +237,10 @@ export class Spot {
   }
 
   /**
-   * @returns {boolean}
+   * @returns {string} SPOT_TYPE
    */
-  get wall() {
-    return this.#wall
+  get type() {
+    return this.#type
   }
 
   /**
@@ -215,6 +248,20 @@ export class Spot {
    */
   get heuristic() {
     return this.#heuristic
+  }
+
+  /**
+   * @returns {number}
+   */
+  get width() {
+    return this.#width
+  }
+
+  /**
+   * @returns {number}
+   */
+  get height() {
+    return this.#height
   }
 
   /**
@@ -246,17 +293,9 @@ export class Spot {
   }
 
   /**
-   * @param {boolean} value
+   * @param {string} value - SPOT_TYPE
    */
-  set wall(value) {
-    this.#wall = value
-  }
-
-  get width() {
-    return this.#width
-  }
-
-  get height() {
-    return this.#height
-  }
+  set type(value) {
+    this.#type = value
+}
 }

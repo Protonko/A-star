@@ -1,5 +1,6 @@
 import {Spot} from './Spot'
 import {ConfigurationSingleton} from './ConfigurationSingleton'
+import {SPOT_TYPE} from './static';
 
 export class Grid {
   /**
@@ -29,13 +30,8 @@ export class Grid {
   constructor(cols, rows) {
     this.#configuration = new ConfigurationSingleton()
     this.#createGrid(cols,rows)
-    this.#start = this.#grid[0][0]
-    this.#end = this.#grid[cols - 1][rows - 1]
-
-    // start and end nodes always must be obtainable
-    this.#start.wall = false
-    this.#end.wall = false
-    this.#configuration.appendSpotToOpenSet(this.#start)
+    this.setStartSpot(this.#grid[0][0])
+    this.setEndSpot(this.#grid[cols - 1][rows - 1])
   }
 
   /**
@@ -65,6 +61,37 @@ export class Grid {
         this.#grid[i][k].appendNeighbors(this.#grid, cols, rows)
       }
     }
+  }
+
+  /**
+   * @param {Spot} node
+   */
+  setStartSpot(node) {
+    if (this.#start) {
+      this.#start.type = SPOT_TYPE.DEFAULT
+    }
+
+    this.#configuration.removeFromOpenSet(this.#start)
+    this.#start = node
+
+    // start node always must be obtainable
+    this.#start.type = SPOT_TYPE.START_NODE
+
+    this.#configuration.appendSpotToOpenSet(this.#start)
+  }
+
+  /**
+   * @param {Spot} node
+   */
+  setEndSpot(node) {
+    if (this.#end) {
+      this.#end.type = SPOT_TYPE.DEFAULT
+    }
+
+    this.#end = node
+
+    // start node always must be obtainable
+    this.#end.type = SPOT_TYPE.END_NODE
   }
 
   /**

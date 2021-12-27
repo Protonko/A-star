@@ -119,6 +119,10 @@ export class ConfigurationSingleton {
     return this.#mouse
   }
 
+  get canvas() {
+    return this.#canvas
+  }
+
   /**
    * @param {Spot} spot
    */

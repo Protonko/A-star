@@ -1,6 +1,7 @@
 import {ConfigurationSingleton} from './ConfigurationSingleton'
 import {Grid} from './Grid'
-import {COLORS} from './static';
+import {COLORS, SPOT_TYPE} from './static';
+import {Utils} from './utils';
 
 export class Sketch {
   /**
@@ -44,6 +45,42 @@ export class Sketch {
       this.#findShortestPath()
     })
 
+    let startNode
+    let endNode
+    this.#configuration.canvas.addEventListener('click', () => {
+      spotLoop: for (let row of this.#grid.grid) {
+        for (let spot of row) {
+          const spotMouse = {
+            x: spot.x * spot.width,
+            y: spot.y * spot.height,
+            width: spot.width - 1,
+            height: spot.height - 1,
+          }
+
+          if (Utils.collision(spotMouse, this.#configuration.mouse) && spot.type !== SPOT_TYPE.WALL) {
+            if (startNode === spot) {
+              console.log('ERROR');
+              return
+            }
+
+            if (startNode && endNode) {
+              startNode = spot
+              endNode = undefined
+              this.#grid.setStartSpot(spot)
+            } else if (startNode) {
+              endNode = spot
+              this.#grid.setEndSpot(spot)
+            } else {
+              startNode = spot
+              this.#grid.setStartSpot(spot)
+            }
+
+            break spotLoop
+          }
+        }
+      }
+    })
+
     this.#animate()
   }
 
@@ -69,7 +106,7 @@ export class Sketch {
     const neighbors = this.#currentSpot.neighbors
 
     for (const neighbor of neighbors) {
-      if (!this.#configuration.closedSet.has(neighbor) && !neighbor.wall) {
+      if (!this.#configuration.closedSet.has(neighbor) && neighbor.type !== SPOT_TYPE.WALL) {
         this.#updateNeighboursScore(neighbor)
       }
 
