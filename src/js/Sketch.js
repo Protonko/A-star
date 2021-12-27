@@ -1,7 +1,8 @@
 import {ConfigurationSingleton} from './ConfigurationSingleton'
-import {Grid} from './Grid'
 import {COLORS, SPOT_TYPE} from './static';
 import {Utils} from './utils';
+import {Pathfinder} from './Pathfinder';
+import {Grid} from './Grid';
 
 export class Sketch {
   /**
@@ -15,38 +16,36 @@ export class Sketch {
   #grid
 
   /**
+   * @type {Pathfinder}
+   */
+  #pathfinder
+
+  /**
    * @type {Array<Spot>}
    */
   #path
 
-  /**
-   * @type {Spot | null}
-   */
-  #currentSpot
-
-  /**
-   * @type {boolean}
-   */
-  #searchIsOver
-
-  /**
-   * @type {boolean}
-   */
-  #searchIsStarted = false
-
   constructor() {
     this.#configuration = new ConfigurationSingleton()
-    this.#grid = new Grid(this.#configuration.cols, this.#configuration.rows)
+    this.#grid = new Grid()
+    this.#pathfinder = new Pathfinder(this.#grid)
     this.#path = []
-    this.#currentSpot = null
-    this.#searchIsOver = false
+
+    this.#handleSelectEndpoints()
 
     document.querySelector('#BTN').addEventListener('click', () => {
-      this.#findShortestPath()
+      if (!this.#pathfinder.searchIsOver) {
+        this.#findShortestPathAndVisualize()
+      }
     })
 
+    this.#animate()
+  }
+
+  #handleSelectEndpoints() {
     let startNode
     let endNode
+
     this.#configuration.canvas.addEventListener('click', () => {
       spotLoop: for (let row of this.#grid.grid) {
         for (let spot of row) {
@@ -59,7 +58,6 @@ export class Sketch {
 
           if (Utils.collision(spotMouse, this.#configuration.mouse) && spot.type !== SPOT_TYPE.WALL) {
             if (startNode === spot) {
-              console.log('ERROR');
               return
             }
 
@@ -80,85 +78,13 @@ export class Sketch {
         }
       }
     })
-
-    this.#animate()
   }
 
-  #findShortestPath() {
-    this.#searchIsStarted = true
-    if (this.#configuration.openSet.size <= 0) {
-      this.#searchIsOver = true
-      this.#searchIsStarted = false
-      console.log('End node is not obtainable!');
-      return
-    }
-
-    this.#currentSpot = this.#findSpotWithLowestIndex()
-
-    if (this.#currentSpot === this.#grid.end) {
-      this.#searchIsOver = true
-      this.#searchIsStarted = false
-    }
-
-    this.#configuration.removeFromOpenSet(this.#currentSpot)
-    this.#configuration.appendSpotToClosedSet(this.#currentSpot)
-
-    const neighbors = this.#currentSpot.neighbors
-
-    for (const neighbor of neighbors) {
-      if (!this.#configuration.closedSet.has(neighbor) && neighbor.type !== SPOT_TYPE.WALL) {
-        this.#updateNeighboursScore(neighbor)
-      }
-
-      neighbor.goalScore = this.#currentSpot.goalScore + 1
-    }
-
+  #findShortestPathAndVisualize() {
+    this.#pathfinder.findShortestPath()
     this.#drawClosedNodes()
     this.#drawDiscoveredNodes()
     this.#drawResultPath()
-  }
-
-  /**
-   * @param {Spot} neighbor
-   */
-  #updateNeighboursScore(neighbor) {
-    const tentativeGoalScore = this.#currentSpot.goalScore + 1
-
-    if (this.#configuration.openSet.has(neighbor)) {
-      if (tentativeGoalScore < neighbor.goalScore) {
-        neighbor.goalScore = tentativeGoalScore
-        this.#recalculatePath(neighbor)
-      }
-    } else {
-      neighbor.goalScore = tentativeGoalScore
-      this.#configuration.appendSpotToOpenSet(neighbor)
-      this.#recalculatePath(neighbor)
-    }
-  }
-
-  /**
-   * @returns {Spot}
-   */
-  #findSpotWithLowestIndex() {
-    let lowestIndex = 0
-    const arrayFromOpenSet = Array.from(this.#configuration.openSet)
-
-    for (let i = 0; i < arrayFromOpenSet.length; i++) {
-      if (arrayFromOpenSet[i].fScore < arrayFromOpenSet[lowestIndex].fScore) {
-        lowestIndex = i
-      }
-    }
-
-    return arrayFromOpenSet[lowestIndex]
-  }
-
-  /**
-   * @param {Spot} neighbor
-   */
-  #recalculatePath(neighbor) {
-    neighbor.heuristic = Sketch.#heuristic(neighbor, this.#grid.end)
-    neighbor.fScore = neighbor.goalScore + neighbor.heuristic
-    neighbor.previous = this.#currentSpot
   }
 
   #drawGrid() {
@@ -182,13 +108,13 @@ export class Sketch {
   }
 
   #drawResultPath() {
-    if (!this.#currentSpot) {
+    if (!this.#pathfinder.spotWithLowestIndex) {
       console.error('currentSpot is undefined!');
       return
     }
 
     this.#path = []
-    let spot = this.#currentSpot
+    let spot = this.#pathfinder.spotWithLowestIndex
     this.#path.push(spot)
 
     while (spot.previous) {
@@ -222,21 +148,12 @@ export class Sketch {
   #animate = () => {
     this.#drawGrid()
 
-    if (this.#searchIsStarted) {
-      this.#findShortestPath()
+    if (this.#pathfinder.searchIsStarted) {
+      this.#findShortestPathAndVisualize()
     }
 
-    if (!this.#searchIsOver) {
+    if (!this.#pathfinder.searchIsOver) {
       requestAnimationFrame(this.#animate)
     }
-  }
-
-  /**
-   * @param {Spot} neighbor
-   * @param {Spot} endSpot
-   * @returns {number}
-   */
-  static #heuristic(neighbor, endSpot) {
-    return Math.abs(neighbor.x - endSpot.x) + Math.abs(neighbor.y - endSpot.y)
   }
 }

@@ -23,15 +23,11 @@ export class Grid {
    */
   #end
 
-  /**
-   * @param {number} cols
-   * @param {number} rows
-   */
-  constructor(cols, rows) {
+  constructor() {
     this.#configuration = new ConfigurationSingleton()
-    this.#createGrid(cols,rows)
+    this.#createGrid(this.#configuration.cols, this.#configuration.rows)
     this.setStartSpot(this.#grid[0][0])
-    this.setEndSpot(this.#grid[cols - 1][rows - 1])
+    this.setEndSpot(this.#grid[this.#configuration.cols - 1][this.#configuration.rows - 1])
   }
 
   /**
@@ -99,6 +95,13 @@ export class Grid {
    */
   get grid() {
     return this.#grid
+  }
+
+  /**
+   * @returns {Spot}
+   */
+  get start() {
+    return this.#start
   }
 
   /**
