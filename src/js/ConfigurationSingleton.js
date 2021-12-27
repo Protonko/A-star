@@ -137,6 +137,14 @@ export class ConfigurationSingleton {
     this.#closedSet.add(spot)
   }
 
+  resetOpenSet() {
+    this.#openSet = new Set()
+  }
+
+  resetClosedSet() {
+    this.#closedSet = new Set()
+  }
+
   /**
    * @param {Spot} spot
    */

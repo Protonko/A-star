@@ -39,6 +39,19 @@ export class Sketch {
       }
     })
 
+    document.querySelector('#RESET').addEventListener('click', () => {
+      this.reset()
+    })
+
+    this.#animate()
+  }
+
+  reset() {
+    this.#configuration.resetOpenSet()
+    this.#configuration.resetClosedSet()
+    this.#grid = new Grid()
+    this.#pathfinder = new Pathfinder(this.#grid)
+    this.#path = []
     this.#animate()
   }
 
