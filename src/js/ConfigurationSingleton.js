@@ -20,6 +20,16 @@ export class ConfigurationSingleton {
   #canvas
 
   /**
+   * @type {HTMLDivElement}
+   */
+  #findPathButton
+
+  /**
+   * @type {HTMLDivElement}
+   */
+  #resetButton
+
+  /**
    * @type {Object}
    * @param {number} mouse.x
    * @param {number} mouse.y
@@ -43,6 +53,8 @@ export class ConfigurationSingleton {
     }
 
     this.#canvas = document.getElementById('canvas-area')
+    this.#findPathButton = document.getElementById('find-path-button')
+    this.#resetButton = document.getElementById('reset-button')
     this.#context = this.#canvas.getContext('2d')
     this.#canvas.width = this.#width
     this.#canvas.height = this.#height
@@ -119,8 +131,25 @@ export class ConfigurationSingleton {
     return this.#mouse
   }
 
+  /**
+   * @returns {HTMLCanvasElement}
+   */
   get canvas() {
     return this.#canvas
+  }
+
+  /**
+   * @returns {HTMLDivElement}
+   */
+  get findPathButton() {
+    return this.#findPathButton
+  }
+
+  /**
+   * @returns {HTMLDivElement}
+   */
+  get resetButton() {
+    return this.#resetButton
   }
 
   /**

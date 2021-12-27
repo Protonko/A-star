@@ -100,13 +100,6 @@ export class Grid {
   /**
    * @returns {Spot}
    */
-  get start() {
-    return this.#start
-  }
-
-  /**
-   * @returns {Spot}
-   */
   get end() {
     return this.#end
   }

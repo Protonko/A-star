@@ -33,14 +33,16 @@ export class Sketch {
 
     this.#handleSelectEndpoints()
 
-    document.querySelector('#BTN').addEventListener('click', () => {
+    this.#configuration.findPathButton.addEventListener('click', () => {
       if (!this.#pathfinder.searchIsOver) {
         this.#findShortestPathAndVisualize()
       }
     })
 
-    document.querySelector('#RESET').addEventListener('click', () => {
-      this.reset()
+    this.#configuration.resetButton.addEventListener('click', () => {
+      if (this.#pathfinder.searchIsOver) {
+        this.reset()
+      }
     })
 
     this.#animate()

@@ -1,0 +1,67 @@
+* {
+    /* Colors */
+    --black: #000000;
+    --shark: #2B2D33;
+    --alabaster: #FBFBFB;
+    --white: #FFFFFF;
+    --azureRadiance: #039DFC;
+    --california: #FCA003;
+
+    /* Transitions */
+    --transizion-duration: 300ms;
+
+    font-family: sans-serif;
+    box-sizing: border-box;
+}
+
+body {
+    background-color: var(--alabaster);
+}
+
+canvas {
+    border: 1px solid var(--shark);
+}
+
+.button {
+    padding: 5px 20px;
+    outline: none;
+    color: var(--white);
+    cursor: pointer;
+    transition: background-color var(--transizion-duration);
+    border: 2px solid var(--shark);
+    border-radius: 8px;
+    background-color: var(--shark);
+}
+
+.button:hover {
+    background-color: var(--black);
+}
+
+.container {
+    display: flex;
+}
+
+.block:not(:last-child) {
+    margin-right: 20px;
+}
+
+.info {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.info__color {
+    display: block;
+    width: 20px;
+    height: 20px;
+    margin-right: 5px;
+}
+
+.info__color--start {
+    background-color: var(--california);
+}
+
+.info__color--end {
+    background-color: var(--azureRadiance);
+}

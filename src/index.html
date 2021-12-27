@@ -6,15 +6,29 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>A* pathfinding algorithm</title>
-    <style>
-        canvas {
-            border: 1px solid #000000
-        }
-    </style>
 </head>
 <body>
-    <canvas id="canvas-area"></canvas>
-    <button id="BTN">START</button>
-    <button id="RESET">RESET</button>
+    <h1>A*</h1>
+    <div class="container">
+        <div class="block">
+            <canvas id="canvas-area"></canvas>
+        </div>
+        <div class="block">
+            <div class="legend">
+                <div class="info">
+                    <span class="info__color info__color--start"></span>
+                    <span class="info__description">Начальная точка</span>
+                </div>
+                <div class="info">
+                    <span class="info__color info__color--end"></span>
+                    <span class="info__description">Конечная точка</span>
+                </div>
+            </div>
+            <div class="buttons">
+                <button class="button" id="find-path-button">Найти кратчайший путь</button>
+                <button class="button" id="reset-button">Сбросить</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

@@ -39,36 +39,6 @@ export class Pathfinder {
     this.#searchIsStarted = false
   }
 
-  findShortestPath() {
-    this.#searchIsStarted = true
-    if (this.#configuration.openSet.size <= 0) {
-      this.#searchIsOver = true
-      this.#searchIsStarted = false
-      alert('End node is not obtainable!')
-      return
-    }
-
-    this.#spotWithLowestIndex = this.#findSpotWithLowestIndex()
-
-    if (this.#spotWithLowestIndex === this.#grid.end) {
-      this.#searchIsOver = true
-      this.#searchIsStarted = false
-    }
-
-    this.#configuration.removeFromOpenSet(this.#spotWithLowestIndex)
-    this.#configuration.appendSpotToClosedSet(this.#spotWithLowestIndex)
-
-    const neighbors = this.#spotWithLowestIndex.neighbors
-
-    for (const neighbor of neighbors) {
-      if (!this.#configuration.closedSet.has(neighbor) && neighbor.type !== SPOT_TYPE.WALL) {
-        this.#updateNeighboursScore(neighbor)
-      }
-
-      neighbor.goalScore = this.#spotWithLowestIndex.goalScore + 1
-    }
-  }
-
   /**
    * @param {Spot} neighbor
    */
@@ -119,6 +89,36 @@ export class Pathfinder {
    */
   static #heuristic(neighbor, endSpot) {
     return Math.abs(neighbor.x - endSpot.x) + Math.abs(neighbor.y - endSpot.y)
+  }
+
+  findShortestPath() {
+    this.#searchIsStarted = true
+    if (this.#configuration.openSet.size <= 0) {
+      this.#searchIsOver = true
+      this.#searchIsStarted = false
+      alert('End node is not obtainable!')
+      return
+    }
+
+    this.#spotWithLowestIndex = this.#findSpotWithLowestIndex()
+
+    if (this.#spotWithLowestIndex === this.#grid.end) {
+      this.#searchIsOver = true
+      this.#searchIsStarted = false
+    }
+
+    this.#configuration.removeFromOpenSet(this.#spotWithLowestIndex)
+    this.#configuration.appendSpotToClosedSet(this.#spotWithLowestIndex)
+
+    const neighbors = this.#spotWithLowestIndex.neighbors
+
+    for (const neighbor of neighbors) {
+      if (!this.#configuration.closedSet.has(neighbor) && neighbor.type !== SPOT_TYPE.WALL) {
+        this.#updateNeighboursScore(neighbor)
+      }
+
+      neighbor.goalScore = this.#spotWithLowestIndex.goalScore + 1
+    }
   }
 
   /**
