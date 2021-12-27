@@ -1,2 +1,7 @@
 node_modules
 .idea
+src
+package.json
+package-lock.json
+README.md
+webpack.config.js
